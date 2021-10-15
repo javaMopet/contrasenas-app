@@ -1,25 +1,39 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import { createRouter, createWebHistory } from "vue-router";
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
-]
+import NotFound from '../components/layout/NotFound.vue'
+import PrincipalServicios from "../views/servicios/PrincipalServicios.vue";
+import Inicio from "../views/Inicio.vue";
+
+
+//vuex store
+import store from '../store/index.js'
+
+import AuthRoutes from './modules/auth/index.js'
+import ServidoresRoutes from './modules/servidores/index.js'
+
+var routes = [
+  { path: "/", component: Inicio },
+  { path: "/servicios", component: PrincipalServicios, meta: {requiresAuth: true} },    
+  { path: "/:notFound(.*)", component: NotFound },
+];
+routes = routes.concat(ServidoresRoutes, AuthRoutes);
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+// router.beforeEach(function(to, from, next)
+// si el parametro no se utiliza se cambia por "underscore(_)" por convencion
+router.beforeEach(function(to, _, next){
+  if(to.meta.requiresAuth && !store.getters.isAuthenticated){
+    // next(false);
+    next('/auth/login')
+  } else if (to.meta.requiresUnauth && store.getters.isAuthenticated){
+    next('/servicios?loggedIn=1')
+  } else {
+    next();
+  }
+});
+
+export default router;
