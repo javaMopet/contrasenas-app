@@ -42,6 +42,17 @@
                 />
                 <label for="password" class="text-primary">Password:</label>
               </div>
+              <div
+                class="d-flex align-items-center text-primary"
+                v-if="ingresando"
+              >
+                <strong>Ingresando...</strong>
+                <div
+                  class="spinner-border ms-auto"
+                  role="status"
+                  aria-hidden="true"
+                ></div>
+              </div>
               <p v-if="messageError.length > 0" class="text-danger mb-4">
                 {{ messageError }}
               </p>
@@ -139,8 +150,21 @@
                     required
                   />
                 </div>
+
+                <div
+                  class="d-flex align-items-center text-primary"
+                  v-if="registrandoEmpleado"
+                >
+                  <strong>Registrando...</strong>
+                  <div
+                    class="spinner-border ms-auto"
+                    role="status"
+                    aria-hidden="true"
+                  ></div>
+                </div>
+
                 <p class="text-danger" v-if="errorMessage.length > 0">
-                  Favor de completar la información requerida
+                  {{errorMessage}}
                 </p>
                 <div class="col-md-12 text-center mb-3 mt-3">
                   <button
@@ -176,6 +200,8 @@ export default {
       mode: "login",
       email: "",
       password: "",
+      ingresando: false,
+      registrandoEmpleado:false,
       empleado: {
         nombre: "",
         rol: 1,
@@ -190,12 +216,13 @@ export default {
   },
   methods: {
     async auth() {
+      
       this.errorMessage = "";
       let defaultMessage = "";
       let payload = null;
       if (this.mode === "login") {
         if (!this.validarFormLogin()) return;
-
+        this.ingresando = true;
         defaultMessage = "Falló al intentar autenticar al usuario.";
         payload = {
           mode: this.mode,
@@ -204,7 +231,7 @@ export default {
         };
       } else if (this.mode === "signup") {
         if (!this.validarFormSignup()) return;
-
+        this.registrandoEmpleado = true;
         defaultMessage =
           "No se pudo completar el registro del usuario, favor de intentar más tarde.";
         payload = {
@@ -215,8 +242,12 @@ export default {
       try {
         await this.$store.dispatch("auth", payload);
         this.$router.replace("/servidores");
+        this.ingresando = false;
+        this.registrandoEmpleado = false;
       } catch (err) {
         this.errorMessage = err.message || defaultMessage;
+        this.ingresando = false;
+        this.registrandoEmpleado = false;
       }
     },
     validarFormLogin() {

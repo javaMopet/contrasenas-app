@@ -51,7 +51,8 @@
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <a href="#Product-gallery" class="dropdown-item">Empleados</a>
+                  <router-link to="/admin/empleados" class="dropdown-item"
+                    >Empleados</router-link>
                 </li>
               </ul>
             </li>

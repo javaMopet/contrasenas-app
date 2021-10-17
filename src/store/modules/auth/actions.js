@@ -19,7 +19,7 @@ export default {
         },
       };
       url = "http://localhost:3000/empleados";
-    }    
+    }
     const jsonBody = JSON.stringify(body);
     try {
       const response = await fetch(url, {
@@ -35,6 +35,11 @@ export default {
       if (!response.ok) {
         if (response.status == 401) {
           throw new Error(responseData.mensaje || "Credenciales no válidas.");
+        } else if (response.status == 422) {
+          throw new Error(
+            responseData.mensajeError ||
+              "No es posible registar el empleado. Intentar mas tarde"
+          );
         }
         const error = new Error(
           responseData.mensaje ||
@@ -57,8 +62,12 @@ export default {
         });
       }
     } catch (exception) {
-      if(exception.message==='NetworkError when attempting to fetch resource.'){
-        throw new Error('No existe conexión con el servidor de datos. Problema con la red.')
+      if (
+        exception.message === "NetworkError when attempting to fetch resource."
+      ) {
+        throw new Error(
+          "No existe conexión con el servidor de datos. Problema con la red."
+        );
       }
       throw exception;
     }

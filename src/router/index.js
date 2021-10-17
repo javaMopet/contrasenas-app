@@ -10,13 +10,14 @@ import store from '../store/index.js'
 
 import AuthRoutes from './modules/auth/index.js'
 import ServidoresRoutes from './modules/servidores/index.js'
+import AdminRoutes from './modules/admin/index.js'
 
 var routes = [
   { path: "/", component: Inicio },
   { path: "/servicios", component: PrincipalServicios, meta: {requiresAuth: true} },    
   { path: "/:notFound(.*)", component: NotFound },
 ];
-routes = routes.concat(ServidoresRoutes, AuthRoutes);
+routes = routes.concat(ServidoresRoutes, AuthRoutes, AdminRoutes);
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
