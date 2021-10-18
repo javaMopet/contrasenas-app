@@ -49,8 +49,8 @@
                   <router-link to="/aplicaciones" class="dropdown-item"
                     >Aplicaciones</router-link>
                 </li>
-                <li><hr class="dropdown-divider" /></li>
-                <li>
+                <li v-if="isAdminUser"><hr class="dropdown-divider" /></li>
+                <li v-if="isAdminUser">
                   <router-link to="/admin/empleados" class="dropdown-item"
                     >Empleados</router-link>
                 </li>
@@ -60,7 +60,7 @@
               <a href="#Collaborate" class="nav-link">Empleados</a>
             </li> -->
           </ul>
-          <div class="d-flex">
+          <div class="d-flex align-items-center">            
             <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="!isLoggedIn">
               <router-link to="/auth/login" class="nav-link">Login</router-link>
             </ul>
@@ -70,7 +70,7 @@
               v-if="!isLoggedIn"
               >SignUp</router-link
             >
-            <p class="nav-bar-item text-info" >{{usuarioSesion}}</p>
+            <p class="nav-bar-item text-info me-2 mt-2" v-if="isLoggedIn" >{{usuarioSesionNombre}}</p>
             <button
               class="btn btn-info text-dark"              
               type="button"
@@ -95,11 +95,17 @@ export default {
     },
   },
   computed: {
+     isAdminUser(){
+      return this.$store.getters.isEmpleadoAdmin;
+    },
     isLoggedIn() {
       return this.$store.getters.isAuthenticated;
     },
-    usuarioSesion(){
-      return this.$store.getters.userId;
+    usuarioSesionLogin(){
+      return this.$store.getters.empleadoLogin;
+    },
+    usuarioSesionNombre(){
+      return this.$store.getters.empleadoNombre;
     }
   },
 };

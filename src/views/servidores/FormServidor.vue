@@ -99,15 +99,19 @@ export default {
       this.validate();
       if (this.valid) {
         try {
-          this.$store.dispatch("servidores/saveOrUpdate", { servidor: this.servidor, mode: this.mode });
+          await this.$store.dispatch("servidores/saveOrUpdate", { servidor: this.servidor, mode: this.mode });
           this.submitted = true;
           this.$emit("savedServidor", {
             codigoError: 0,
             mensaje: " se ha guardado exitosamente.",            
           });
+          console.log('no Se llega a ningun error');
           this.reiniciarServidor();
         } catch (error) {
-          console.error(error);
+          this.$emit("savedServidor",{
+            codigoError: 1,
+            mensaje: error.message
+          });
         }
       }
     },

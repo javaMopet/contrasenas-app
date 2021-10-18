@@ -1,4 +1,7 @@
 // import axios from 'axios'
+
+
+
 export default {
   async auth(context, payload) {
     var url = "";
@@ -55,10 +58,16 @@ export default {
 
         localStorage.setItem("token", responseData.token);
         localStorage.setItem("empleadoId", responseData.empleado.id);
+        localStorage.setItem("empleadoRol", responseData.empleado.rol);
+        localStorage.setItem("empleadoLogin", responseData.empleado.login);
+        localStorage.setItem("empleadoNombre", responseData.empleado.nombre);
 
         context.commit("setUser", {
           token: responseData.token,
           empleadoId: responseData.empleado.id,
+          empleadoRol: responseData.empleado.rol,
+          empleadoLogin: responseData.empleado.login,
+          empleadoNombre: responseData.empleado.nombre
         });
       }
     } catch (exception) {
@@ -72,18 +81,24 @@ export default {
       throw exception;
     }
   },
-  logout(context) {
+  logout(context) {    
     context.commit("setUser", {
       token: null,
       empleadoId: null,
+      empleadoRol: null,
+      empleadoLogin: null,
+      empleadoNombre: null,
       tokenExpiration: null,
     });
     localStorage.setItem("token", null);
     localStorage.setItem("empleadoId", null);
+    localStorage.setItem("empleadoRol", null);
+    localStorage.setItem("empleadoLogin", null);
+    localStorage.setItem("empleadoNombre", null);
   },
   tryLogin(context) {
     let token = localStorage.getItem("token");
-    let empleadoId = localStorage.getItem("empleadoId");
+    let empleadoId = localStorage.getItem("empleadoId");    
 
     token = token === "null" ? null : token;
     empleadoId = empleadoId === "null" ? null : empleadoId;
@@ -92,6 +107,9 @@ export default {
       context.commit("setUser", {
         token: token,
         empleadoId: empleadoId,
+        empleadoRol: localStorage.getItem("empleadoRol"),
+        empleadoLogin: localStorage.getItem("empleadoLogin"),
+        empleadoNombre: localStorage.getItem("empleadoNombre"),
         tokenExpiration: null,
       });
     }

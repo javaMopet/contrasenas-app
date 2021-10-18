@@ -211,6 +211,14 @@ export default {
       errorMessage: "",
     };
   },
+  computed: {   
+    messageError() {
+      return this.errorMessage;
+    },
+    expiredSesion() {
+      return this.$route.query.sessionExpired ? true : false;
+    }
+  },
   updated() {
     this.mode = this.$route.params.mode;
   },
@@ -269,15 +277,7 @@ export default {
       }
       return true;
     },
-  },
-  computed: {
-    messageError() {
-      return this.errorMessage;
-    },
-    expiredSesion() {
-      return this.$route.query.sessionExpired ? true : false;
-    },
-  },
+  }  
 };
 </script>
 

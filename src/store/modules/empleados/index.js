@@ -3,13 +3,10 @@ import actions from "./actions.js";
 import getters from "./getters.js";
 
 export default {
+  namespaced:true,
   state() {
     return {
-      empleadoId: null ,
-      empleadoRol:null,
-      empleadoLogin:null,
-      empleadoNombre:null,
-      token: null
+      empleadosList:[]      
     };
   },
   mutations,

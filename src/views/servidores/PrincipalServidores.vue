@@ -1,6 +1,6 @@
 <template id="comment-form">
   <div class="container">
-    <div class="alert alert-success fade show" role="alert" v-if="saved">
+    <div class="alert alert-success fade show" role="alert" v-if="alertSuccess">
       <svg
         class="bi flex-shrink-0 me-2"
         width="24"
@@ -10,7 +10,19 @@
       >
         <use xlink:href="#check-circle-fill" />
       </svg>
-      <strong>El servidor</strong> {{ mensajeAlerta }}
+      <strong>El servidor: </strong> {{ mensajeSuccess }}
+    </div>
+    <div class="alert alert-danger fade show" role="alert" v-if="alertError">
+      <svg
+        class="bi flex-shrink-0 me-2"
+        width="24"
+        height="24"
+        role="img"
+        aria-label="Success:"
+      >
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <strong> {{ mensajeError }}</strong>
     </div>
     <h2 class="text-dark mt-4">Servidores</h2>
 
@@ -78,7 +90,7 @@
                 @click="preDelete(indice, servidor.id)"
                 ><i
                   class="bi bi-x-octagon"
-                  style="font-size:14px !important"
+                  style="font-size: 14px !important"
                 ></i>
                 Eliminar</a
               >
@@ -142,15 +154,16 @@
 import FormServidor from "../servidores/FormServidor.vue";
 
 export default {
-  data: function() {
+  data: function () {
     return {
       email: "",
       valid: false,
       submitted: false,
       isLoading: false,
       error: null,
-      guardado: null,
-      mensajeAlerta: "",
+      saving: null,
+      mensajeSuccess: "",
+      mensajeError: "",
       indice_eliminar: null,
       id_eliminar: null,
       servidorModificar: {
@@ -170,14 +183,19 @@ export default {
     isLoggedIn() {
       return this.$store.getters.isAuthenticated;
     },
-    saved() {
-      return !!this.guardado;
+    alertSuccess() {
+      return !!this.saving && this.mensajeSuccess.length > 0;
+    },
+    alertError() {
+      return !!this.saving && this.mensajeError.length > 0;
     },
   },
   methods: {
     postSaveServidor(data) {
-      if (data.codigoError === 0) {        
+      if (data.codigoError === 0) {
         this.mandarAlertaAccionSuccess(data.mensaje);
+      } else if (data.codigoError > 0) {
+        this.mandarAlertaAccionError(data.mensaje);
       }
     },
     loadServidores() {},
@@ -194,26 +212,32 @@ export default {
       };
     },
     eliminarServidor() {
-      const indice = this.indice_eliminar;
-      const id = this.id_eliminar;
-      const token = this.$store.getters.token;
-      fetch("http://localhost:3000/api/v1/servidores/" + id, {
-        method: "DELETE",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      }).then((response) => {
-        if (response.ok) {
-          this.servidores.splice(indice, 1);
-          this.mandarAlertaAccionSuccess("se ha eliminado correctamente.");
-        }
-      });
+      try {
+        this.$store.dispatch("servidores/requestDelete", {
+          indice: this.indice_eliminar,
+          servidor:{
+            id: this.id_eliminar
+          }
+        });
+        this.mandarAlertaAccionSuccess("se ha eliminado correctamente.");
+      } catch (error) {
+        this.mandarAlertaAccionError(error.message);
+      }      
     },
     mandarAlertaAccionSuccess(mensaje) {
-      this.guardado = true;
-      this.mensajeAlerta = mensaje;
+      this.saving = true;
+      this.mensajeSuccess = mensaje;
+      this.mensajeError = "";
       setTimeout(() => {
-        this.guardado = null;
+        this.saving = null;
+      }, 4000);
+    },
+    mandarAlertaAccionError(mensaje) {
+      this.saving = true;
+      this.mensajeSuccess = "";
+      this.mensajeError = mensaje;
+      setTimeout(() => {
+        this.saving = null;
       }, 4000);
     },
   },
